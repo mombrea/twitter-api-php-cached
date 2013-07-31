@@ -2,7 +2,13 @@
 ini_set('display_errors', 1);
 require_once('TwitterAPIExchange.php');
 
-/** Set access tokens here - see: https://dev.twitter.com/apps/ **/
+/** Set cache file **/
+$tweet_file = 'TweetCache.json';
+
+/** Set cache time in minutes **/
+$cache_time = 2;
+
+/** Set access tokens here **/
 $settings = array(
     'oauth_access_token' => "",
     'oauth_access_token_secret' => "",
@@ -10,28 +16,76 @@ $settings = array(
     'consumer_secret' => ""
 );
 
-/** URL for REST request, see: https://dev.twitter.com/docs/api/1.1/ **/
-$url = 'https://api.twitter.com/1.1/blocks/create.json';
-$requestMethod = 'POST';
-
-/** POST fields required by the URL above. See relevant docs as above **/
-$postfields = array(
-    'screen_name' => 'usernameToBlock', 
-    'skip_status' => '1'
-);
-
-/** Perform a POST request and echo the response **/
-$twitter = new TwitterAPIExchange($settings);
-echo $twitter->buildOauth($url, $requestMethod)
-             ->setPostfields($postfields)
-             ->performRequest();
-
-/** Perform a GET request and echo the response **/
-/** Note: Set the GET field BEFORE calling buildOauth(); **/
-$url = 'https://api.twitter.com/1.1/followers/ids.json';
-$getfield = '?screen_name=J7mbo';
+ReadLatestUpdate();
+    		 
+ function ReadLatestUpdate(){
+	global $tweet_file;
+    global $cache_time;
+	
+	if(!file_exists($tweet_file)){
+		UpdateTimeline();
+		return;
+	}
+	$handle = fopen($tweet_file,'r');
+	$strUpdateDate = fgets($handle);
+	fclose($handle);
+	if(empty($strUpdateDate)){
+		//file is empty
+		UpdateTimeline();
+	}
+	else{
+		$updateDate = new DateTime($strUpdateDate);
+		$now = new DateTime("now");
+		$since = $updateDate->diff($now);
+		
+		$minutes = $since->i;
+		
+		if($minutes > $cache_time){
+			//reload feed
+			UpdateTimeline();
+		}
+		else{
+			//read cache
+			ReadFromCache();
+		}
+		
+	}
+ }
+ 
+ function ReadFromCache(){
+	global $tweet_file;
+	$handle = fopen($tweet_file,'r');
+	$data = fgets($handle); //skip first line
+	$data = '';
+	while(!feof($handle)){
+		$data.= fgets($handle);
+	}
+	fclose($handle);
+	echo $data;
+ }
+ 
+ function UpdateCache($timeline){
+	global $tweet_file;
+	$handle = fopen($tweet_file,'w') or die ('Cannot open cache file');
+	$data = date('m/d/Y h:i:s a', time())."\r\n".$timeline;
+	fwrite($handle,$data);
+	fclose($handle);
+ }
+ 
+ function UpdateTimeline(){
+ global $settings;
+ /** Perform a GET request and echo the response **/
+$url = 'https://api.twitter.com/1.1/statuses/home_timeline.json';
+$getfield = '?count=30';
 $requestMethod = 'GET';
 $twitter = new TwitterAPIExchange($settings);
-echo $twitter->setGetfield($getfield)
-             ->buildOauth($url, $requestMethod)
+$timeline = $twitter->setGetfield($getfield)
+			->buildOauth($url, $requestMethod)
              ->performRequest();
+			 
+			 //save to cache
+			 UpdateCache($timeline);
+			 
+			 //echo results;
+			 echo $timeline;
+ }
