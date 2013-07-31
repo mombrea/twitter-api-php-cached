@@ -1,15 +1,19 @@
 {
-  "name": "j7mbo/twitter-api-php",
-  "description": "Simple PHP Wrapper for Twitter API v1.1 calls",
+  "name": "mombrea/twitter-api-php",
+  "description": "Simple PHP Wrapper for Twitter API v1.1 calls w/ caching",
   "version": "0.1",
   "type": "library",
-  "keywords": ["twitter", "PHP", "API"],
-  "homepage": "https://github.com/j7mbo/twitter-api-php",
+  "keywords": ["twitter", "PHP", "API", "Cache"],
+  "homepage": "https://github.com/mombrea/twitter-api-php",
   "license": "GNU Public License",
   "authors": [
     {
       "name": "James Mallison",
       "homepage": "https://github.com/j7mbo/twitter-api-php"
+    },
+    {
+      "name": "Matt Mombrea",
+      "homepage": "https://github.com/mombrea/twitter-api-php"
     }
   ],
   "autoload": {
