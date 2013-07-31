@@ -1,4 +1,4 @@
-twitter-api-php w/ caching
+twitter-api-php-cached
 ======================
 Simple PHP Wrapper for Twitter API v1.1 calls w/ caching
 
