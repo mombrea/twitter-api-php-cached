@@ -1,4 +1,48 @@
-twitter-api-php
+twitter-api-php w/ caching
+======================
+Simple PHP Wrapper for Twitter API v1.1 calls w/ caching
+
+This is a fork of the [twitter-api-php](https://github.com/J7mbo/twitter-api-php) from [J7mbo](https://github.com/J7mbo/)
+
+This fork includes the addition of a flat file cache for requests made to Twitter. The goal of this api is to moderate the Twitter calls to avoid exeeding the request rate-limit.
+
+An added benefit to this library is that it acts as a proxy to the Twitter API so that you can access the API using Javascript or mobile applications while allowing PHP to negotiate OAuth.
+
+How To Use
+------
+There are additional instructions below for configuring the original version of this library that still apply.
+#### Set the cache file path ####
+
+    $tweet_file = 'TweetCache.json';
+    
+#### Set the cache duration in minutes ####
+
+    $cache_time = 2;
+
+#### Set access tokens ####
+
+    $settings = array(
+        'oauth_access_token' => "YOUR_OAUTH_ACCESS_TOKEN",
+        'oauth_access_token_secret' => "YOUR_OAUTH_ACCESS_TOKEN_SECRET",
+        'consumer_key' => "YOUR_CONSUMER_KEY",
+        'consumer_secret' => "YOUR_CONSUMER_SECRET"
+    );
+    
+From here, calling the index.php file will return the latest 30 tweets from your own timeline as specified in the UpdateTimeline() function.
+
+Expanding and Modifying
+------
+If you want to call a different Twitter API you can simply modify the UpdateTimeline() function to suite.
+
+**If you want to call more than 1 Twitter API function, you'll need to do a little more work.**
+
+- Create a cache file variable for each call you'd like to cache
+- Modify the ReadFromCache() and UpdateCache() functions to accept a cache file variable and use that value when reading/writing to cache
+- Create additional API call functions along the lines of UpdateTimeline()
+- Modify index.php to check for a query parameter indicating what function is being requested
+
+
+twitter-api-php (original)
 ======================
 Simple PHP Wrapper for Twitter API v1.1 calls
 
