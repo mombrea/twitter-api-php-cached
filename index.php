@@ -38,7 +38,7 @@ ReadLatestUpdate();
 		$now = new DateTime("now");
 		$since = $updateDate->diff($now);
 		
-		$minutes = $since->i;
+		$minutes = $since->days * 24 * 60 + $since->h * 60 + $since->i;
 		
 		if($minutes > $cache_time){
 			//reload feed
